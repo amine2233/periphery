@@ -8,7 +8,8 @@ var dependencies: [Package.Dependency] = [
     .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
     // Use tag once https://github.com/MobileNativeFoundation/swift-index-store/issues/27 is resolved.
     .package(url: "https://github.com/ileitch/swift-index-store", revision: "ed1f232d33b8e03956af0f4206fbd30171a43138"),
-    .package(url: "https://github.com/apple/swift-syntax", from: "603.0.0"),
+    // Range starts at the prerelease so it resolves alongside SwiftLint, which pins exact 605 prereleases.
+    .package(url: "https://github.com/swiftlang/swift-syntax.git", "605.0.0-prerelease-2026-06-26" ..< "606.0.0"),
     .package(url: "https://github.com/ileitch/swift-filename-matcher", from: "2.0.0"),
 ]
 
@@ -180,7 +181,10 @@ let package = Package(
     platforms: [.macOS(.v15)],
     products: [
         .executable(name: "periphery", targets: ["Frontend"]),
-        .library(name: "PeripheryKit", targets: ["PeripheryKit"]),
+        .library(
+            name: "PeripheryKit",
+            targets: ["PeripheryKit", "ProjectDrivers", "Configuration", "SourceGraph", "Indexer", "Shared", "Logger"]
+        ),
     ],
     dependencies: dependencies,
     targets: targets,

@@ -28,6 +28,12 @@ public final class SPMProjectDriver {
 }
 
 extension SPMProjectDriver: ProjectDriver {
+    // SwiftPM's Swift Build backend (Swift 6.4+) writes the index store to .build/out instead of .build/debug/index/store.
+    private var legacyOrSwiftBuildIndexStore: FilePath {
+        let legacy = pkg.path.appending(".build/debug/index/store")
+        return legacy.exists ? legacy : pkg.path.appending(".build/out")
+    }
+
     public func build() throws {
         if !configuration.skipBuild {
             if configuration.cleanBuild {
@@ -47,7 +53,7 @@ extension SPMProjectDriver: ProjectDriver {
         let indexStorePaths: Set<FilePath> = if !configuration.indexStorePath.isEmpty {
             Set(configuration.indexStorePath)
         } else {
-            [pkg.path.appending(".build/debug/index/store")]
+            [legacyOrSwiftBuildIndexStore]
         }
 
         // Load package description once and reuse it
